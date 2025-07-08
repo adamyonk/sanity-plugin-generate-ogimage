@@ -1,6 +1,6 @@
 import React, {useState, useCallback} from 'react'
 import {LayoutData, LayoutField, LayoutFieldTypes} from './types'
-import {Box, Stack, Switch, Text, TextArea, TextInput} from '@sanity/ui'
+import {Box, Stack, Switch, Text, TextArea, Select, TextInput} from '@sanity/ui'
 
 interface EditorFieldProps {
   field: LayoutField
@@ -9,10 +9,10 @@ interface EditorFieldProps {
   disabled: boolean
 }
 
-const UNSUPORTED_TYPES: LayoutFieldTypes[] = ['array', 'date', 'datetime', 'image', 'reference']
+const UNSUPORTED_TYPES: LayoutFieldTypes[] = ['date', 'datetime', 'image', 'reference']
 
 const EditorField: React.FC<EditorFieldProps> = ({field, data = {}, updateData, disabled}) => {
-  const {type, name, title, unsupportedError} = field
+  const {type, name, title, options, unsupportedError} = field
   const [value, setValue] = useState(data[name])
 
   const onChange = useCallback(
@@ -47,9 +47,7 @@ const EditorField: React.FC<EditorFieldProps> = ({field, data = {}, updateData, 
           <Text size={1} weight="semibold">
             {label}
           </Text>
-          <Text size={0}>
-            {unsupportedError || 'Close this dialog and edit the document to change this field.'}
-          </Text>
+          <Text size={0}>{unsupportedError || `${type} is an unsupported field type.`}</Text>
         </Stack>
       </Box>
     )
@@ -71,7 +69,7 @@ const EditorField: React.FC<EditorFieldProps> = ({field, data = {}, updateData, 
     )
   }
 
-  if (!['boolean', 'number', 'text', 'string'].includes(type)) {
+  if (!['array', 'boolean', 'number', 'text', 'string'].includes(type)) {
     console.error('Asset-source OG Image: wrong field type received')
     return null
   }
@@ -83,15 +81,29 @@ const EditorField: React.FC<EditorFieldProps> = ({field, data = {}, updateData, 
   }
 
   return (
-    <div>
-      <label>
-        {type === 'boolean' && <Switch checked={value === true} onChange={onChange} />}
-        {type === 'text' && <TextArea {...commonProps} rows={5} />}
-        {(type === 'string' || type === 'number') && (
-          <TextInput type={type === 'number' ? 'number' : 'text'} {...commonProps} />
-        )}
-      </label>
-    </div>
+    <Box marginTop={2}>
+      <Stack space={2}>
+        <Text size={1} weight="semibold">
+          {label}
+        </Text>
+        <Text size={0}>
+          {type === 'boolean' && <Switch checked={value === true} onChange={onChange} />}
+          {type === 'text' && <TextArea {...commonProps} rows={5} />}
+          {type === 'array' && (
+            <Select {...commonProps}>
+              {options?.list.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.title}
+                </option>
+              ))}
+            </Select>
+          )}
+          {(type === 'string' || type === 'number') && (
+            <TextInput type={type === 'number' ? 'number' : 'text'} {...commonProps} />
+          )}
+        </Text>
+      </Stack>
+    </Box>
   )
 }
 
