@@ -16,7 +16,7 @@ const EditorField: React.FC<EditorFieldProps> = ({field, data = {}, updateData, 
   const [value, setValue] = useState(data[name])
 
   const onChange = useCallback(
-    (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
       let newValue: number | string | boolean = e.currentTarget.value
 
       if (e.currentTarget.type === 'checkbox' && 'checked' in e.currentTarget) {
