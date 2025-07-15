@@ -69,6 +69,9 @@ export interface LayoutField {
    * Exclusive to non-supported types
    */
   unsupportedError?: string
+  options?: {
+    list: {title: string; value: string}[]
+  }
 }
 
 export type EditorLayout<Data = LayoutData> = {
