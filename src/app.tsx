@@ -4,6 +4,7 @@ import Editor from './Editor'
 import React, {useCallback} from 'react'
 import isHotkey from 'is-hotkey'
 import defaultLayout from './defaultLayout'
+import { useFormValue } from 'sanity'
 
 interface SelectedAsset {
   [key: string]: any
@@ -28,7 +29,6 @@ type Props = {
    * Exclusive to studio tools.
    */
   tool?: ToolType
-  document?: SanityDocument
   selectedAssets?: SelectedAsset[]
   selectionType: 'single'
   darkMode?: boolean
@@ -46,6 +46,8 @@ const MediaEditor: React.FC<Props> = (props) => {
   }, [])
   useGlobalKeyDown(handleGlobalKeyDown)
 
+  const _document = useFormValue([]) as SanityDocument
+
   let layouts = (typeof tool === 'object' && tool.props?.layouts) || props.layouts
   layouts = layouts?.filter((layout) => layout.prepare && layout.component)
 
@@ -59,7 +61,7 @@ const MediaEditor: React.FC<Props> = (props) => {
     return null
   }
 
-  const document: SanityDocument = props.document || {_id: 'unknown'}
+  const document: SanityDocument = _document || ({_id: 'unknown'} as const)
 
   const editorProps = {
     document,
